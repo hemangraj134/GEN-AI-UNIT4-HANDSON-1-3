@@ -1,1 +1,213 @@
 # GEN-AI-UNIT4-HANDSON-1-3
+
+Hands-on notebooks for **Unit 4 – Advanced AI Systems** covering Multimodal Models, Agentic Workflows, Evaluation, Data, Ethics & Trends.
+
+---
+
+## 📁 Repository Structure
+
+```
+GEN-AI-UNIT4-HANDSON-1-3/
+│
+├── 1_Multimodal_Models.ipynb          # CLIP, BLIP, Whisper, multimodal pipeline
+├── 2_Agentic_Workflows.ipynb          # ReAct, AutoGen, CrewAI, multi-agent systems
+├── 3_Evaluation_Data_Ethics.ipynb     # DeepEval, TruLens, RAG eval, bias & security
+│
+├── requirements.txt                   # All dependencies
+├── .env.example                       # API key template (safe to commit)
+├── .gitignore                         # Ignores venv, .env, caches
+└── README.md
+```
+
+---
+
+## 📚 Notebook Overview
+
+### Notebook 1 – Multimodal Models
+**File:** `1_Multimodal_Models.ipynb`
+
+Explores three foundational multimodal models, all running **locally via Hugging Face Transformers** — no API key required.
+
+| Model | Modalities | Key Capability |
+|-------|-----------|----------------|
+| CLIP  | Image ↔ Text | Zero-shot classification, image-text similarity |
+| BLIP  | Image ↔ Text | Image captioning, Visual Question Answering (VQA) |
+| Whisper | Audio → Text | Speech-to-text transcription, language detection |
+
+**What you build:**
+- Image-text similarity scoring with CLIP
+- Zero-shot image classification (no labels needed)
+- Shared embedding space exploration
+- BLIP image captioning (conditional & unconditional)
+- BLIP VQA — ask natural language questions about images
+- Whisper transcription from LibriSpeech audio samples
+- Whisper language detection
+- **End-to-end multimodal pipeline:** Audio → Whisper → text query → CLIP → ranked images → BLIP → caption
+
+**Known fix applied:**
+- A custom `load_image(url)` helper was added to handle HTTP 429 / User-Agent blocking from Wikipedia/Wikimedia CDNs. Raw `requests.get()` calls were blocked without a browser-like `User-Agent` header.
+- Labrador dog image (Wikimedia 640px URL) returned a `429 Client Error` at runtime — the pipeline gracefully skips failed images and continues with the remaining 4-image database.
+- `datasets` `Audio(decode=False)` pattern used to avoid `torchcodec` dependency issues on Windows/local environments.
+- Whisper deprecation warnings (`forced_decoder_ids`, `attention_mask`) are cosmetic — output is correct.
+
+---
+
+### Notebook 2 – Agentic Workflows
+**File:** `2_Agentic_Workflows.ipynb`
+
+Covers the architecture and implementation of autonomous AI agents.
+
+**Topics covered:**
+- ReAct (Reason + Act) loop implementation
+- Tool-use agents with Groq LLM backend
+- Tavily web search integration
+- AutoGen multi-agent conversation patterns
+- CrewAI role-based agent pipelines
+- Multi-agent task decomposition
+
+**Requires:**
+```
+GROQ_API_KEY=your_key_here
+TAVILY_API_KEY=your_key_here
+```
+
+---
+
+### Notebook 3 – Evaluation, Data, Ethics & Trends
+**File:** `3_Evaluation_Data_Ethics.ipynb`
+
+Covers how to measure, audit, and responsibly deploy AI systems.
+
+**Topics covered:**
+- RAG pipeline construction with FAISS vector store
+- Embedding-based retrieval
+- DeepEval metrics: Answer Relevancy, Faithfulness, Contextual Precision/Recall
+- TruLens RAG Triad evaluation (Groundedness, Context Relevance, Answer Relevance)
+- Bias detection demos
+- Prompt injection & security vulnerability demos
+- AI trends and responsible deployment patterns
+
+---
+
+## ⚙️ Local Setup (VS Code)
+
+### Prerequisites
+- Python 3.10 or 3.11
+- VS Code with the **Python** and **Jupyter** extensions installed
+- Git
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/<your-username>/GEN-AI-UNIT4-HANDSON-1-3.git
+cd GEN-AI-UNIT4-HANDSON-1-3
+```
+
+### 2. Create a Virtual Environment
+```bash
+python -m venv venv
+
+# Activate — Windows
+venv\Scripts\activate
+
+# Activate — macOS/Linux
+source venv/bin/activate
+```
+
+### 3. Install Dependencies
+```bash
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+### 4. Configure API Keys
+```bash
+# Copy the template
+cp .env.example .env
+```
+Edit `.env` and fill in your keys:
+```
+GROQ_API_KEY=your_groq_api_key_here
+TAVILY_API_KEY=your_tavily_api_key_here
+```
+> ⚠️ `.env` is listed in `.gitignore` and will **never** be committed to GitHub.
+
+### 5. Select the Kernel in VS Code
+Open any `.ipynb` file → click **Select Kernel** (top-right) → choose the `venv` Python interpreter.
+
+### 6. GPU (Optional)
+The notebooks detect GPU automatically:
+```python
+device = "cuda" if torch.cuda.is_available() else "cpu"
+```
+CPU mode works for all three notebooks, though Whisper and BLIP will be slower.
+If you have an NVIDIA GPU, install the CUDA-enabled torch build from [pytorch.org](https://pytorch.org/get-started/locally/).
+
+---
+
+## 🔐 Security Notes
+
+| File | Status | Reason |
+|------|--------|--------|
+| `.env` | ❌ Never commit | Contains live API keys |
+| `venv/` | ❌ Never commit | Large, reproducible via `requirements.txt` |
+| `__pycache__/` | ❌ Never commit | Auto-generated bytecode |
+| `HuggingFace_Cache/` | ❌ Never commit | Large model weight cache |
+| `.env.example` | ✅ Safe to commit | Contains only key names, no values |
+
+---
+
+## 📦 Key Dependencies
+
+| Package | Used In |
+|---------|---------|
+| `transformers` | All notebooks — CLIP, BLIP, Whisper |
+| `torch` / `torchvision` | Model inference |
+| `Pillow` | Image loading and processing |
+| `soundfile` / `datasets` | Audio loading for Whisper |
+| `faiss-cpu` | Vector store for RAG (Notebook 3) |
+| `sentence-transformers` | Embeddings for RAG |
+| `deepeval` | LLM evaluation metrics (Notebook 3) |
+| `trulens-eval` | RAG triad evaluation (Notebook 3) |
+| `pyautogen` | Multi-agent workflows (Notebook 2) |
+| `crewai` | Role-based agent pipelines (Notebook 2) |
+| `groq` | LLM API backend (Notebooks 2 & 3) |
+| `tavily-python` | Web search tool for agents (Notebook 2) |
+| `python-dotenv` | Secure `.env` loading |
+
+---
+
+## 🧹 Notebook Hygiene (Before Submitting)
+
+1. **Clear all outputs** before committing:
+   - VS Code: `Jupyter: Clear All Outputs` from the Command Palette
+   - Or: `Cell → Clear All Outputs` in the notebook toolbar
+2. **Remove any hardcoded API keys** — use `os.getenv("KEY_NAME")` + `.env` only
+3. **Restart and run all cells top-to-bottom** to verify reproducibility before final push
+
+---
+
+## 🚀 Running the Notebooks
+
+```bash
+# Ensure venv is active, then open VS Code
+code .
+```
+Open each notebook and run cells sequentially from top to bottom.
+
+**Recommended order:**
+1. `1_Multimodal_Models.ipynb` — no API keys needed
+2. `2_Agentic_Workflows.ipynb` — requires GROQ + TAVILY keys
+3. `3_Evaluation_Data_Ethics.ipynb` — requires GROQ key
+
+---
+
+## 🔗 References
+
+- [Hugging Face Transformers](https://huggingface.co/docs/transformers)
+- [CLIP (OpenAI)](https://openai.com/research/clip)
+- [BLIP (Salesforce)](https://huggingface.co/Salesforce/blip-image-captioning-base)
+- [Whisper (OpenAI)](https://huggingface.co/openai/whisper-base)
+- [DeepEval](https://docs.confident-ai.com/)
+- [TruLens](https://www.trulens.org/)
+- [Groq API](https://console.groq.com/)
+- [Tavily Search API](https://tavily.com/)
