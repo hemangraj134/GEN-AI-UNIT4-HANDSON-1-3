@@ -98,7 +98,7 @@ Covers how to measure, audit, and responsibly deploy AI systems.
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/<your-username>/GEN-AI-UNIT4-HANDSON-1-3.git
+git clone https://github.com/hemangraj134/GEN-AI-UNIT4-HANDSON-1-3.git
 cd GEN-AI-UNIT4-HANDSON-1-3
 ```
 
